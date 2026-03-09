@@ -1,171 +1,227 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<title>General Tracks - Prototype</title>
+<meta charset="UTF-8">
+<title>General Tracks v2</title>
+
 <style>
+
 body{
-  background:#0b0b0b;
-  color:white;
-  font-family:Arial;
-  margin:0;
-  padding:20px;
+background:#0a0a0a;
+color:white;
+font-family:Arial;
+margin:0;
+display:flex;
+height:100vh;
 }
-h1{
-  text-align:center;
+
+#songs{
+width:220px;
+background:#111;
+padding:10px;
+overflow:auto;
 }
-.container{
-  max-width:900px;
-  margin:auto;
+
+#songs button{
+width:100%;
+margin-bottom:6px;
+padding:8px;
+background:#222;
+color:white;
+border:none;
+cursor:pointer;
 }
+
+#main{
+flex:1;
+padding:20px;
+}
+
 .track{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:10px;
+display:flex;
+align-items:center;
+margin-bottom:8px;
+gap:10px;
 }
+
+.transport{
+margin-top:20px;
+}
+
 button{
-  padding:10px 20px;
-  font-size:16px;
-  margin-right:10px;
+padding:10px 16px;
+margin-right:10px;
 }
-input[type=range]{
-  width:200px;
+
+#stage{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+color:white;
+display:none;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+font-size:40px;
 }
-.progress{
-  height:10px;
-  background:#333;
-  margin-top:20px;
-}
-.bar{
-  height:10px;
-  width:0%;
-  background:#4caf50;
-}
+
 </style>
 </head>
 
 <body>
 
-<div class="container">
-<h1>General Tracks</h1>
+<div id="songs">
 
-<div>
-<button onclick="play()">PLAY</button>
-<button onclick="stop()">STOP</button>
+<h3>Setlist</h3>
+
+<button onclick="selectSong(0)">Música 1</button>
+<button onclick="selectSong(1)">Música 2</button>
+
 </div>
 
-<hr/>
+<div id="main">
+
+<h1 id="songName">Nenhuma música</h1>
 
 <div class="track">
-<label>Drums</label>
-<input type="file" id="drums" accept="audio/*">
+Drums <input type="file" id="drums">
 <input type="range" min="0" max="1" step="0.01" value="1" id="vol_drums">
 </div>
 
 <div class="track">
-<label>Bass</label>
-<input type="file" id="bass" accept="audio/*">
+Bass <input type="file" id="bass">
 <input type="range" min="0" max="1" step="0.01" value="1" id="vol_bass">
 </div>
 
 <div class="track">
-<label>Pads</label>
-<input type="file" id="pads" accept="audio/*">
+Pads <input type="file" id="pads">
 <input type="range" min="0" max="1" step="0.01" value="1" id="vol_pads">
 </div>
 
 <div class="track">
-<label>Click</label>
-<input type="file" id="click" accept="audio/*">
+Click <input type="file" id="click">
 <input type="range" min="0" max="1" step="0.01" value="1" id="vol_click">
 </div>
 
-<div class="progress">
-<div class="bar" id="progress"></div>
+<div class="transport">
+
+<button onclick="play()">Play</button>
+<button onclick="stop()">Stop</button>
+<button onclick="nextSong()">Next</button>
+<button onclick="stageMode()">Modo Palco</button>
+
 </div>
+
+</div>
+
+<div id="stage">
+
+<div id="stageSong">Música</div>
+
+<button onclick="play()">PLAY</button>
+<button onclick="nextSong()">NEXT</button>
+
+<button onclick="closeStage()">SAIR</button>
 
 </div>
 
 <script>
 
 let audioContext
-let tracks={}
 let sources=[]
-let startTime=0
+let currentSong=0
 
-async function loadTrack(file){
- const arrayBuffer = await file.arrayBuffer()
- return await audioContext.decodeAudioData(arrayBuffer)
+const songs=[
+"Musica 1",
+"Musica 2"
+]
+
+function selectSong(i){
+
+currentSong=i
+document.getElementById("songName").innerText=songs[i]
+document.getElementById("stageSong").innerText=songs[i]
+
+}
+
+async function load(file){
+
+const array=await file.arrayBuffer()
+return await audioContext.decodeAudioData(array)
+
 }
 
 async function play(){
 
- audioContext = new (window.AudioContext || window.webkitAudioContext)()
+audioContext=new(window.AudioContext||window.webkitAudioContext)()
 
- const ids=["drums","bass","pads","click"]
+sources=[]
 
- for(let id of ids){
+const ids=["drums","bass","pads","click"]
 
-   const input=document.getElementById(id)
+for(let id of ids){
 
-   if(input.files.length===0) continue
+const input=document.getElementById(id)
 
-   const buffer=await loadTrack(input.files[0])
+if(input.files.length===0)continue
 
-   const source=audioContext.createBufferSource()
-   const gain=audioContext.createGain()
+const buffer=await load(input.files[0])
 
-   gain.gain.value=document.getElementById("vol_"+id).value
+const source=audioContext.createBufferSource()
+const gain=audioContext.createGain()
 
-   source.buffer=buffer
-   source.connect(gain)
-   gain.connect(audioContext.destination)
+gain.gain.value=document.getElementById("vol_"+id).value
 
-   sources.push(source)
+source.buffer=buffer
+source.connect(gain)
+gain.connect(audioContext.destination)
 
- }
+sources.push(source)
 
- startTime = audioContext.currentTime + 0.1
+}
 
- sources.forEach(s=>{
-   s.start(startTime)
- })
+const start=audioContext.currentTime+0.1
 
- updateProgress()
+sources.forEach(s=>s.start(start))
+
 }
 
 function stop(){
- sources.forEach(s=>{
-   try{s.stop()}catch(e){}
- })
- sources=[]
- document.getElementById("progress").style.width="0%"
-}
 
-function updateProgress(){
+sources.forEach(s=>{
+try{s.stop()}catch(e){}
+})
 
- if(!audioContext) return
-
- const progress=document.getElementById("progress")
-
- function frame(){
-
-  if(!audioContext || sources.length===0) return
-
-  const time=audioContext.currentTime-startTime
-
-  const percent=Math.min(time/180,1)*100
-
-  progress.style.width=percent+"%"
-
-  requestAnimationFrame(frame)
-
- }
-
- frame()
+sources=[]
 
 }
+
+function nextSong(){
+
+currentSong++
+
+if(currentSong>=songs.length)currentSong=0
+
+selectSong(currentSong)
+
+}
+
+function stageMode(){
+
+document.getElementById("stage").style.display="flex"
+
+}
+
+function closeStage(){
+
+document.getElementById("stage").style.display="none"
+
+}
+
+selectSong(0)
 
 </script>
 
