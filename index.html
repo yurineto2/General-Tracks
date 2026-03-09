@@ -1,177 +1,1783 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>General Tracks</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VS Player Pro - Multitrack Playback System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --bg-hover: #252535;
+            --accent-primary: #00d4ff;
+            --accent-secondary: #ff006e;
+            --accent-warning: #ffb800;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+            --border-color: #2a2a3a;
+            --success: #00ff88;
+            --danger: #ff4444;
+        }
 
-body{
-    margin:0;
-    background:#0b0b0b;
-    color:white;
-    font-family:Arial;
-}
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+            user-select: none;
+        }
 
-/* topo */
+        /* Layout Principal */
+        .app-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 280px;
+            grid-template-rows: 60px 1fr 100px;
+            height: 100vh;
+            gap: 1px;
+            background: var(--border-color);
+        }
 
-header{
-    background:#111;
-    padding:15px;
-    text-align:center;
-    font-size:22px;
-    font-weight:bold;
-}
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
 
-/* editor */
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-#editor{
-    padding:20px;
-}
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-text-fill-color: white;
+            font-size: 18px;
+        }
 
-textarea{
-    width:100%;
-    height:200px;
-    background:#1a1a1a;
-    color:white;
-    border:none;
-    padding:15px;
-    font-size:16px;
-    resize:none;
-}
+        .header-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
 
-/* botões */
+        .btn-header {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-.buttons{
-    margin-top:10px;
-}
+        .btn-header:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent-primary);
+        }
 
-button{
-    background:#e50914;
-    border:none;
-    color:white;
-    padding:10px 15px;
-    margin-right:10px;
-    cursor:pointer;
-    border-radius:5px;
-}
+        .btn-header.active {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            border-color: var(--accent-primary);
+        }
 
-/* palco */
+        /* Sidebar - Setlist */
+        .sidebar-left {
+            background: var(--bg-secondary);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-#stage{
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:black;
-    color:white;
-    padding:60px;
-    overflow:auto;
-    font-size:40px;
-    line-height:1.6;
-}
+        .panel-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-#closeStage{
-    position:fixed;
-    top:20px;
-    right:20px;
-    background:red;
-}
+        .setlist-controls {
+            padding: 12px;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
 
-</style>
+        .btn-small {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .setlist {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .song-item {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .song-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent-primary);
+            transform: translateX(4px);
+        }
+
+        .song-item.active {
+            background: linear-gradient(90deg, var(--accent-primary) 0%, transparent 100%);
+            border-color: var(--accent-primary);
+            background-size: 4px 100%;
+            background-repeat: no-repeat;
+        }
+
+        .song-item.playing::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--success);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .song-number {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .song-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .song-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+        }
+
+        .song-key {
+            color: var(--accent-warning);
+            font-weight: 600;
+        }
+
+        .song-bpm {
+            color: var(--accent-primary);
+        }
+
+        /* Main Content - Tracks */
+        .main-content {
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .toolbar {
+            background: var(--bg-secondary);
+            padding: 12px 24px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .transport {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-transport {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-transport:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-primary);
+        }
+
+        .btn-transport.play {
+            background: var(--success);
+            color: var(--bg-primary);
+            width: 64px;
+            height: 64px;
+            font-size: 28px;
+        }
+
+        .btn-transport.stop {
+            background: var(--danger);
+            color: white;
+        }
+
+        .time-display {
+            font-family: 'Courier New', monospace;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            min-width: 120px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .song-info-display {
+            flex: 1;
+            text-align: center;
+        }
+
+        .current-song-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .current-song-meta {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .tempo-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-tertiary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tempo-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .tempo-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Tracks Area */
+        .tracks-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .track {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: grid;
+            grid-template-columns: 200px 1fr 300px;
+            gap: 16px;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .track:hover {
+            border-color: var(--bg-hover);
+            background: var(--bg-tertiary);
+        }
+
+        .track.muted {
+            opacity: 0.5;
+        }
+
+        .track.solo {
+            border-color: var(--accent-warning);
+            box-shadow: 0 0 20px rgba(255, 184, 0, 0.1);
+        }
+
+        .track-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .track-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .track-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .track-details span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .track-waveform {
+            height: 60px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .waveform-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .track-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-track {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .btn-track:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-track.mute.active {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .btn-track.solo.active {
+            background: var(--accent-warning);
+            color: var(--bg-primary);
+            border-color: var(--accent-warning);
+        }
+
+        .volume-slider {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .volume-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-primary);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--bg-primary);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--bg-primary);
+        }
+
+        /* Sidebar Right - Mixer */
+        .sidebar-right {
+            background: var(--bg-secondary);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .mixer-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .mixer-channel {
+            margin-bottom: 20px;
+        }
+
+        .mixer-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .pan-slider {
+            margin-bottom: 12px;
+        }
+
+        .output-select {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        /* Bottom Bar */
+        .bottom-bar {
+            grid-column: 1 / -1;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 24px;
+        }
+
+        .progress-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            width: 0%;
+            transition: width 0.1s linear;
+            position: relative;
+        }
+
+        .progress-handle {
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .markers {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .marker {
+            position: relative;
+            padding-top: 4px;
+        }
+
+        .marker::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 4px;
+            background: var(--text-muted);
+        }
+
+        .next-song-preview {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 0 24px;
+            border-left: 1px solid var(--border-color);
+            min-width: 300px;
+        }
+
+        .next-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .next-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .btn-next {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            border: none;
+            color: var(--bg-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .btn-next:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .file-drop {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-drop:hover {
+            border-color: var(--accent-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Show Mode */
+        .show-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .show-mode.active {
+            display: flex;
+        }
+
+        .show-title {
+            font-size: 72px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
+
+        .show-tempo {
+            font-size: 120px;
+            font-weight: 100;
+            color: var(--accent-primary);
+            font-family: 'Courier New', monospace;
+            margin-bottom: 40px;
+        }
+
+        .show-progress {
+            width: 80%;
+            height: 20px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .show-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            width: 45%;
+            transition: width 0.1s linear;
+        }
+
+        .show-controls {
+            display: flex;
+            gap: 40px;
+        }
+
+        .show-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 48px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .show-btn:hover {
+            border-color: var(--accent-primary);
+            transform: scale(1.05);
+        }
+
+        .show-btn.play {
+            background: var(--success);
+            color: var(--bg-primary);
+            border-color: var(--success);
+            width: 160px;
+            height: 160px;
+        }
+
+        .show-btn.stop {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .show-next {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            text-align: right;
+        }
+
+        .show-next-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .show-next-title {
+            font-size: 32px;
+            font-weight: 600;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--bg-hover);
+        }
+
+        /* MIDI Status */
+        .midi-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .midi-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .midi-indicator.active {
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 260px 1fr 240px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+            .sidebar-left, .sidebar-right {
+                display: none;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-<header>
-General Tracks
-</header>
+<div class="app-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">VS</div>
+            VS Player Pro
+        </div>
+        
+        <div class="header-controls">
+            <div class="midi-status">
+                <div class="midi-indicator" id="midiIndicator"></div>
+                <span>MIDI</span>
+            </div>
+            <button class="btn-header" onclick="app.toggleShowMode()">
+                <span>🎭</span> Modo Show
+            </button>
+            <button class="btn-header" onclick="app.openSettings()">
+                <span>⚙️</span> Config
+            </button>
+            <button class="btn-header" onclick="app.openAddSong()">
+                <span>+</span> Nova Música
+            </button>
+        </div>
+    </header>
 
-<div id="editor">
+    <!-- Sidebar Left - Setlist -->
+    <aside class="sidebar-left">
+        <div class="panel-header">
+            Setlist
+            <span style="font-size: 12px; color: var(--text-muted);">12 músicas</span>
+        </div>
+        
+        <div class="setlist-controls">
+            <button class="btn-small" onclick="app.clearSetlist()">Limpar</button>
+            <button class="btn-small" onclick="app.saveSetlist()">Salvar</button>
+            <button class="btn-small" onclick="app.loadSetlist()">Carregar</button>
+        </div>
 
-<h3>Cole aqui a cifra ou letra</h3>
+        <div class="setlist" id="setlist">
+            <!-- Songs will be inserted here -->
+        </div>
+    </aside>
 
-<textarea id="lyrics">
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="toolbar">
+            <div class="transport">
+                <button class="btn-transport" onclick="app.prevSong()" title="Música Anterior">⏮</button>
+                <button class="btn-transport stop" onclick="app.stop()" title="Stop">⏹</button>
+                <button class="btn-transport play" onclick="app.togglePlay()" id="playBtn" title="Play/Pause">▶</button>
+                <button class="btn-transport" onclick="app.nextSong()" title="Próxima Música">⏭</button>
+            </div>
 
-Tom: G
+            <div class="time-display" id="timeDisplay">00:00</div>
 
-[G]Senhor eu preciso de Ti
-[D]Mais do que ontem
-[Em]Mais do que palavras
-[C]Eu quero Te sentir
+            <div class="song-info-display">
+                <div class="current-song-title" id="currentSongTitle">Selecione uma música</div>
+                <div class="current-song-meta" id="currentSongMeta">-- | -- | --</div>
+            </div>
 
-</textarea>
+            <div class="tempo-display">
+                <div>
+                    <div class="tempo-value" id="bpmDisplay">--</div>
+                    <div class="tempo-label">BPM</div>
+                </div>
+            </div>
 
-<div class="buttons">
+            <button class="btn-header" onclick="app.toggleClick()" id="clickBtn">
+                <span>🔊</span> Clique
+            </button>
+        </div>
 
-<button onclick="openStage()">
-Modo Palco
-</button>
+        <div class="tracks-container" id="tracksContainer">
+            <!-- Tracks will be inserted here -->
+        </div>
+    </main>
 
-<button onclick="startScroll()">
-Auto Scroll
-</button>
+    <!-- Sidebar Right - Mixer -->
+    <aside class="sidebar-right">
+        <div class="panel-header">Mixer & Routing</div>
+        
+        <div class="mixer-section" id="mixerSection">
+            <!-- Mixer channels will be inserted here -->
+        </div>
+    </aside>
 
-<button onclick="stopScroll()">
-Parar
-</button>
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+        <div class="progress-container">
+            <div class="progress-bar" onclick="app.seek(event)">
+                <div class="progress-fill" id="progressBar">
+                    <div class="progress-handle"></div>
+                </div>
+            </div>
+            <div class="markers">
+                <span>00:00</span>
+                <span class="marker">Intro</span>
+                <span class="marker">Verse</span>
+                <span class="marker">Chorus</span>
+                <span class="marker">Bridge</span>
+                <span id="totalTime">00:00</span>
+            </div>
+        </div>
 
+        <div class="next-song-preview">
+            <div>
+                <div class="next-label">Próxima Música</div>
+                <div class="next-title" id="nextSongTitle">--</div>
+            </div>
+            <button class="btn-next" onclick="app.nextSong()" title="Próxima">⏭</button>
+        </div>
+    </div>
 </div>
 
+<!-- Show Mode Overlay -->
+<div class="show-mode" id="showMode">
+    <div class="show-title" id="showTitle">MÚSICA</div>
+    <div class="show-tempo" id="showTempo">128</div>
+    
+    <div class="show-progress">
+        <div class="show-progress-bar" id="showProgressBar"></div>
+    </div>
+
+    <div class="show-controls">
+        <button class="show-btn stop" onclick="app.stop()">⏹</button>
+        <button class="show-btn play" onclick="app.togglePlay()" id="showPlayBtn">▶</button>
+        <button class="show-btn" onclick="app.nextSong()">⏭</button>
+    </div>
+
+    <div class="show-next">
+        <div class="show-next-label">Próxima</div>
+        <div class="show-next-title" id="showNextTitle">--</div>
+    </div>
+
+    <button class="btn-header" onclick="app.toggleShowMode()" style="position: absolute; top: 40px; right: 40px;">
+        Sair do Modo Show
+    </button>
 </div>
 
-<div id="stage">
+<!-- Add Song Modal -->
+<div class="modal" id="addSongModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            Adicionar Nova Música
+            <button class="close-btn" onclick="app.closeModals()">×</button>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Nome da Música</label>
+            <input type="text" class="form-input" id="songName" placeholder="Ex: Amazing Grace">
+        </div>
 
-<button id="closeStage" onclick="closeStage()">
-Sair
-</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+                <label class="form-label">BPM</label>
+                <input type="number" class="form-input" id="songBpm" value="120" min="40" max="300">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tom</label>
+                <input type="text" class="form-input" id="songKey" placeholder="Ex: G">
+            </div>
+        </div>
 
-<div id="stageText"></div>
+        <div class="form-group">
+            <label class="form-label">Duração (segundos)</label>
+            <input type="number" class="form-input" id="songDuration" value="240">
+        </div>
 
+        <div class="form-group">
+            <label class="form-label">Arquivos de Áudio (Stems)</label>
+            <div class="file-drop" onclick="document.getElementById('audioFiles').click()">
+                <div style="font-size: 48px; margin-bottom: 16px;">📁</div>
+                <div>Clique ou arraste arquivos WAV/AIFF aqui</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                    drums.wav, bass.wav, pads.wav, synth.wav, click.wav, guide.wav
+                </div>
+            </div>
+            <input type="file" id="audioFiles" multiple accept=".wav,.aiff,.mp3" style="display: none;" onchange="app.handleFiles(this.files)">
+        </div>
+
+        <button class="btn-primary" onclick="app.addSong()">Adicionar ao Setlist</button>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal" id="settingsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            Configurações
+            <button class="close-btn" onclick="app.closeModals()">×</button>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Dispositivo de Saída Principal</label>
+            <select class="form-input" id="mainOutput">
+                <option value="default">Sistema Padrão</option>
+                <option value="interface1">Interface de Áudio USB (1-2)</option>
+                <option value="interface2">Interface de Áudio USB (3-4)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Saída do Clique</label>
+            <select class="form-input" id="clickOutput">
+                <option value="default">Mesma do Principal</option>
+                <option value="output3">Output 3</option>
+                <option value="output4">Output 4</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Controle MIDI</label>
+            <select class="form-input" id="midiInput">
+                <option value="">Nenhum</option>
+                <option value="pedal1">Pedal USB MIDI</option>
+                <option value="keyboard1">Teclado Controlador</option>
+            </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+                <label class="form-label">Buffer Size</label>
+                <select class="form-input" id="bufferSize">
+                    <option value="128">128 samples (Low Latency)</option>
+                    <option value="256" selected>256 samples</option>
+                    <option value="512">512 samples (Stable)</option>
+                    <option value="1024">1024 samples</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Sample Rate</label>
+                <select class="form-input" id="sampleRate">
+                    <option value="44100">44.1 kHz</option>
+                    <option value="48000" selected>48 kHz</option>
+                    <option value="96000">96 kHz</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                <input type="checkbox" id="autoAdvance" checked> 
+                Avançar automaticamente para próxima música
+            </label>
+        </div>
+
+        <button class="btn-primary" onclick="app.saveSettings()">Salvar Configurações</button>
+    </div>
 </div>
 
 <script>
+/**
+ * VS Player Pro - Multitrack Playback System
+ * Aplicação completa para playback de stems em ambientes ao vivo
+ */
 
-let scrollInterval;
+class VSPlayer {
+    constructor() {
+        this.audioContext = null;
+        this.isPlaying = false;
+        this.currentSongIndex = -1;
+        this.currentTime = 0;
+        this.duration = 0;
+        this.bpm = 120;
+        this.clickEnabled = true;
+        this.showMode = false;
+        this.midiAccess = null;
+        this.songs = [];
+        this.tracks = [];
+        this.outputs = [];
+        
+        // Configurações padrão
+        this.settings = {
+            mainOutput: 'default',
+            clickOutput: 'default',
+            midiInput: '',
+            bufferSize: 256,
+            sampleRate: 48000,
+            autoAdvance: true
+        };
 
-function openStage(){
+        this.init();
+    }
 
-let text = document.getElementById("lyrics").value;
+    async init() {
+        // Inicializar Web Audio API
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
+                sampleRate: this.settings.sampleRate,
+                latencyHint: 'playback'
+            });
+        } catch (e) {
+            console.error('Web Audio API não suportada:', e);
+            alert('Seu navegador não suporta Web Audio API. Use Chrome ou Edge.');
+            return;
+        }
 
-document.getElementById("stageText").innerText = text;
+        // Inicializar MIDI
+        await this.initMIDI();
 
-document.getElementById("stage").style.display="block";
+        // Carregar dados de exemplo
+        this.loadDemoData();
 
+        // Renderizar interface
+        this.renderSetlist();
+        this.renderTracks();
+        this.renderMixer();
+
+        // Configurar atalhos de teclado
+        this.setupKeyboardShortcuts();
+
+        // Iniciar loop de atualização
+        this.startUpdateLoop();
+
+        console.log('VS Player Pro inicializado');
+    }
+
+    async initMIDI() {
+        if (navigator.requestMIDIAccess) {
+            try {
+                this.midiAccess = await navigator.requestMIDIAccess();
+                this.midiAccess.inputs.forEach(input => {
+                    input.onmidimessage = (event) => this.handleMIDIMessage(event);
+                });
+                document.getElementById('midiIndicator').classList.add('active');
+                console.log('MIDI inicializado');
+            } catch (e) {
+                console.warn('MIDI não disponível:', e);
+            }
+        }
+    }
+
+    handleMIDIMessage(event) {
+        const [command, note, velocity] = event.data;
+        
+        // Note On (144) ou Control Change (176)
+        if (command === 144 || command === 176) {
+            switch(note) {
+                case 64: // Sustain pedal
+                case 0:  // CC 0
+                    this.togglePlay();
+                    break;
+                case 1:
+                    this.stop();
+                    break;
+                case 2:
+                    this.prevSong();
+                    break;
+                case 3:
+                    this.nextSong();
+                    break;
+            }
+        }
+    }
+
+    loadDemoData() {
+        // Dados de demonstração
+        this.songs = [
+            {
+                id: 1,
+                title: "Amazing Grace",
+                artist: "Hino Tradicional",
+                bpm: 72,
+                key: "G",
+                duration: 245,
+                tracks: [
+                    { name: "Click", type: "click", icon: "🎵", volume: 0.8, muted: false, output: "Click" },
+                    { name: "Guide", type: "guide", icon: "🎤", volume: 0.6, muted: false, output: "Guide" },
+                    { name: "Drums", type: "drums", icon: "🥁", volume: 0.9, muted: false, output: "Main" },
+                    { name: "Bass", type: "bass", icon: "🎸", volume: 0.85, muted: false, output: "Main" },
+                    { name: "Pads", type: "pads", icon: "🎹", volume: 0.7, muted: false, output: "Main" },
+                    { name: "Synth", type: "synth", icon: "🎛️", volume: 0.75, muted: true, output: "Main" }
+                ]
+            },
+            {
+                id: 2,
+                title: "Oceans",
+                artist: "Hillsong United",
+                bpm: 63,
+                key: "D",
+                duration: 312,
+                tracks: [
+                    { name: "Click", type: "click", icon: "🎵", volume: 0.8, muted: false, output: "Click" },
+                    { name: "Guide", type: "guide", icon: "🎤", volume: 0.6, muted: true, output: "Guide" },
+                    { name: "Drums", type: "drums", icon: "🥁", volume: 0.9, muted: false, output: "Main" },
+                    { name: "Bass", type: "bass", icon: "🎸", volume: 0.85, muted: false, output: "Main" },
+                    { name: "Pads", type: "pads", icon: "🎹", volume: 0.7, muted: false, output: "Main" },
+                    { name: "Strings", type: "strings", icon: "🎻", volume: 0.6, muted: false, output: "Main" }
+                ]
+            },
+            {
+                id: 3,
+                title: "What A Beautiful Name",
+                artist: "Hillsong Worship",
+                bpm: 68,
+                key: "D",
+                duration: 258,
+                tracks: [
+                    { name: "Click", type: "click", icon: "🎵", volume: 0.8, muted: false, output: "Click" },
+                    { name: "Guide", type: "guide", icon: "🎤", volume: 0.6, muted: true, output: "Guide" },
+                    { name: "Drums", type: "drums", icon: "🥁", volume: 0.9, muted: false, output: "Main" },
+                    { name: "Bass", type: "bass", icon: "🎸", volume: 0.85, muted: false, output: "Main" },
+                    { name: "Piano", type: "piano", icon: "🎹", volume: 0.75, muted: false, output: "Main" },
+                    { name: "Orchestra", type: "orch", icon: "🎼", volume: 0.7, muted: false, output: "Main" }
+                ]
+            }
+        ];
+
+        // Selecionar primeira música
+        if (this.songs.length > 0) {
+            this.loadSong(0);
+        }
+    }
+
+    loadSong(index) {
+        if (index < 0 || index >= this.songs.length) return;
+        
+        this.currentSongIndex = index;
+        const song = this.songs[index];
+        this.bpm = song.bpm;
+        this.duration = song.duration;
+        this.currentTime = 0;
+        this.tracks = song.tracks;
+
+        // Atualizar interface
+        document.getElementById('currentSongTitle').textContent = song.title;
+        document.getElementById('currentSongMeta').textContent = `${song.artist} | ${song.key} | ${this.formatTime(song.duration)}`;
+        document.getElementById('bpmDisplay').textContent = song.bpm;
+        document.getElementById('totalTime').textContent = this.formatTime(song.duration);
+        document.getElementById('showTitle').textContent = song.title;
+        document.getElementById('showTempo').textContent = song.bpm;
+
+        // Próxima música
+        const nextIndex = index + 1;
+        const nextTitle = nextIndex < this.songs.length ? this.songs[nextIndex].title : '--';
+        document.getElementById('nextSongTitle').textContent = nextTitle;
+        document.getElementById('showNextTitle').textContent = nextTitle;
+
+        // Atualizar setlist visual
+        this.renderSetlist();
+        this.renderTracks();
+        this.renderMixer();
+        this.updateProgress();
+    }
+
+    renderSetlist() {
+        const container = document.getElementById('setlist');
+        container.innerHTML = '';
+
+        this.songs.forEach((song, index) => {
+            const item = document.createElement('div');
+            item.className = `song-item ${index === this.currentSongIndex ? 'active' : ''} ${index === this.currentSongIndex && this.isPlaying ? 'playing' : ''}`;
+            item.onclick = () => this.loadSong(index);
+            
+            item.innerHTML = `
+                <div class="song-number">${String(index + 1).padStart(2, '0')}</div>
+                <div class="song-title">${song.title}</div>
+                <div class="song-meta">
+                    <span class="song-key">${song.key}</span>
+                    <span class="song-bpm">${song.bpm} BPM</span>
+                    <span>${this.formatTime(song.duration)}</span>
+                </div>
+            `;
+            
+            container.appendChild(item);
+        });
+    }
+
+    renderTracks() {
+        const container = document.getElementById('tracksContainer');
+        container.innerHTML = '';
+
+        this.tracks.forEach((track, index) => {
+            const trackEl = document.createElement('div');
+            trackEl.className = `track ${track.muted ? 'muted' : ''} ${track.solo ? 'solo' : ''}`;
+            
+            trackEl.innerHTML = `
+                <div class="track-info">
+                    <div class="track-icon">${track.icon}</div>
+                    <div class="track-details">
+                        <h4>${track.name}</h4>
+                        <span>${track.type.toUpperCase()}</span>
+                    </div>
+                </div>
+                
+                <div class="track-waveform">
+                    <canvas class="waveform-canvas" id="waveform-${index}" width="600" height="60"></canvas>
+                </div>
+                
+                <div class="track-controls">
+                    <button class="btn-track mute ${track.muted ? 'active' : ''}" onclick="app.toggleMute(${index})" title="Mute">M</button>
+                    <button class="btn-track solo ${track.solo ? 'active' : ''}" onclick="app.toggleSolo(${index})" title="Solo">S</button>
+                    <div class="volume-slider">
+                        <div class="volume-label">
+                            <span>Vol</span>
+                            <span>${Math.round(track.volume * 100)}%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="${track.volume * 100}" 
+                               oninput="app.setVolume(${index}, this.value)">
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(trackEl);
+            
+            // Desenhar waveform fake
+            setTimeout(() => this.drawWaveform(index), 0);
+        });
+    }
+
+    drawWaveform(index) {
+        const canvas = document.getElementById(`waveform-${index}`);
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        
+        ctx.fillStyle = '#0a0a0f';
+        ctx.fillRect(0, 0, width, height);
+        
+        ctx.strokeStyle = '#00d4ff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        
+        for (let x = 0; x < width; x += 2) {
+            const amplitude = Math.random() * height * 0.8;
+            const y = (height - amplitude) / 2;
+            ctx.moveTo(x, y);
+            ctx.lineTo(x, y + amplitude);
+        }
+        
+        ctx.stroke();
+        
+        // Linha de progresso
+        const progress = this.currentTime / this.duration;
+        ctx.strokeStyle = '#ff006e';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(width * progress, 0);
+        ctx.lineTo(width * progress, height);
+        ctx.stroke();
+    }
+
+    renderMixer() {
+        const container = document.getElementById('mixerSection');
+        container.innerHTML = '';
+
+        this.tracks.forEach((track, index) => {
+            const channel = document.createElement('div');
+            channel.className = 'mixer-channel';
+            
+            channel.innerHTML = `
+                <div class="mixer-label">
+                    <span>${track.name}</span>
+                    <span>${Math.round(track.volume * 100)}%</span>
+                </div>
+                <input type="range" min="0" max="100" value="${track.volume * 100}" 
+                       oninput="app.setVolume(${index}, this.value)" style="width: 100%;">
+                <div class="pan-slider">
+                    <input type="range" min="-50" max="50" value="0" style="width: 100%;">
+                </div>
+                <select class="output-select" onchange="app.setOutput(${index}, this.value)">
+                    <option value="Main" ${track.output === 'Main' ? 'selected' : ''}>Main (1-2)</option>
+                    <option value="Click" ${track.output === 'Click' ? 'selected' : ''}>Click (3)</option>
+                    <option value="Guide" ${track.output === 'Guide' ? 'selected' : ''}>Guide (4)</option>
+                    <option value="Drums" ${track.output === 'Drums' ? 'selected' : ''}>Drums (5-6)</option>
+                </select>
+            `;
+            
+            container.appendChild(channel);
+        });
+    }
+
+    togglePlay() {
+        if (this.isPlaying) {
+            this.pause();
+        } else {
+            this.play();
+        }
+    }
+
+    play() {
+        if (!this.audioContext) return;
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
+        
+        this.isPlaying = true;
+        document.getElementById('playBtn').innerHTML = '⏸';
+        document.getElementById('showPlayBtn').innerHTML = '⏸';
+        this.renderSetlist(); // Atualizar indicador visual
+        
+        // Aqui seria iniciado o playback real dos áudios
+        console.log('Play - iniciando playback');
+    }
+
+    pause() {
+        this.isPlaying = false;
+        document.getElementById('playBtn').innerHTML = '▶';
+        document.getElementById('showPlayBtn').innerHTML = '▶';
+        this.renderSetlist();
+        console.log('Pause');
+    }
+
+    stop() {
+        this.isPlaying = false;
+        this.currentTime = 0;
+        document.getElementById('playBtn').innerHTML = '▶';
+        document.getElementById('showPlayBtn').innerHTML = '▶';
+        this.updateProgress();
+        this.renderSetlist();
+        console.log('Stop');
+    }
+
+    nextSong() {
+        if (this.currentSongIndex < this.songs.length - 1) {
+            this.stop();
+            this.loadSong(this.currentSongIndex + 1);
+            if (this.settings.autoAdvance) {
+                setTimeout(() => this.play(), 500);
+            }
+        }
+    }
+
+    prevSong() {
+        if (this.currentSongIndex > 0) {
+            this.stop();
+            this.loadSong(this.currentSongIndex - 1);
+        }
+    }
+
+    seek(event) {
+        const bar = event.currentTarget;
+        const rect = bar.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const percent = x / rect.width;
+        this.currentTime = this.duration * percent;
+        this.updateProgress();
+    }
+
+    updateProgress() {
+        const percent = (this.currentTime / this.duration) * 100;
+        document.getElementById('progressBar').style.width = percent + '%';
+        document.getElementById('showProgressBar').style.width = percent + '%';
+        document.getElementById('timeDisplay').textContent = this.formatTime(this.currentTime);
+        
+        // Redesenhar waveforms
+        this.tracks.forEach((_, index) => this.drawWaveform(index));
+    }
+
+    startUpdateLoop() {
+        setInterval(() => {
+            if (this.isPlaying) {
+                this.currentTime += 0.1;
+                if (this.currentTime >= this.duration) {
+                    if (this.settings.autoAdvance && this.currentSongIndex < this.songs.length - 1) {
+                        this.nextSong();
+                    } else {
+                        this.stop();
+                    }
+                }
+                this.updateProgress();
+            }
+        }, 100);
+    }
+
+    toggleMute(index) {
+        this.tracks[index].muted = !this.tracks[index].muted;
+        this.renderTracks();
+        this.renderMixer();
+    }
+
+    toggleSolo(index) {
+        this.tracks[index].solo = !this.tracks[index].solo;
+        this.renderTracks();
+    }
+
+    setVolume(index, value) {
+        this.tracks[index].volume = value / 100;
+        this.renderMixer();
+    }
+
+    setOutput(index, output) {
+        this.tracks[index].output = output;
+    }
+
+    toggleClick() {
+        this.clickEnabled = !this.clickEnabled;
+        document.getElementById('clickBtn').classList.toggle('active', this.clickEnabled);
+        // Mute/unmute track de click
+        const clickTrack = this.tracks.find(t => t.type === 'click');
+        if (clickTrack) {
+            clickTrack.muted = !this.clickEnabled;
+            this.renderTracks();
+        }
+    }
+
+    toggleShowMode() {
+        this.showMode = !this.showMode;
+        document.getElementById('showMode').classList.toggle('active', this.showMode);
+        if (this.showMode) {
+            document.documentElement.requestFullscreen?.();
+        } else {
+            document.exitFullscreen?.();
+        }
+    }
+
+    openAddSong() {
+        document.getElementById('addSongModal').classList.add('active');
+    }
+
+    openSettings() {
+        document.getElementById('settingsModal').classList.add('active');
+    }
+
+    closeModals() {
+        document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+    }
+
+    addSong() {
+        const name = document.getElementById('songName').value;
+        const bpm = parseInt(document.getElementById('songBpm').value);
+        const key = document.getElementById('songKey').value;
+        const duration = parseInt(document.getElementById('songDuration').value);
+
+        if (!name) {
+            alert('Por favor, insira o nome da música');
+            return;
+        }
+
+        const newSong = {
+            id: Date.now(),
+            title: name,
+            artist: "Artista Desconhecido",
+            bpm: bpm,
+            key: key || "C",
+            duration: duration,
+            tracks: [
+                { name: "Click", type: "click", icon: "🎵", volume: 0.8, muted: false, output: "Click" },
+                { name: "Guide", type: "guide", icon: "🎤", volume: 0.6, muted: true, output: "Guide" },
+                { name: "Mix", type: "mix", icon: "🎛️", volume: 0.9, muted: false, output: "Main" }
+            ]
+        };
+
+        this.songs.push(newSong);
+        this.renderSetlist();
+        this.closeModals();
+        
+        // Limpar formulário
+        document.getElementById('songName').value = '';
+        document.getElementById('songKey').value = '';
+    }
+
+    handleFiles(files) {
+        console.log('Arquivos selecionados:', files);
+        // Aqui seria processado o upload e análise dos stems
+    }
+
+    saveSettings() {
+        this.settings.mainOutput = document.getElementById('mainOutput').value;
+        this.settings.clickOutput = document.getElementById('clickOutput').value;
+        this.settings.midiInput = document.getElementById('midiInput').value;
+        this.settings.bufferSize = parseInt(document.getElementById('bufferSize').value);
+        this.settings.sampleRate = parseInt(document.getElementById('sampleRate').value);
+        this.settings.autoAdvance = document.getElementById('autoAdvance').checked;
+        
+        this.closeModals();
+        console.log('Configurações salvas:', this.settings);
+    }
+
+    clearSetlist() {
+        if (confirm('Limpar todo o setlist?')) {
+            this.songs = [];
+            this.currentSongIndex = -1;
+            this.renderSetlist();
+        }
+    }
+
+    saveSetlist() {
+        const data = JSON.stringify(this.songs, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'setlist.json';
+        a.click();
+    }
+
+    loadSetlist() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    this.songs = JSON.parse(event.target.result);
+                    this.renderSetlist();
+                    if (this.songs.length > 0) this.loadSong(0);
+                } catch (err) {
+                    alert('Erro ao carregar setlist');
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+
+    setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+            
+            switch(e.code) {
+                case 'Space':
+                    e.preventDefault();
+                    this.togglePlay();
+                    break;
+                case 'ArrowRight':
+                    this.nextSong();
+                    break;
+                case 'ArrowLeft':
+                    this.prevSong();
+                    break;
+                case 'Escape':
+                    if (this.showMode) this.toggleShowMode();
+                    this.closeModals();
+                    break;
+            }
+        });
+    }
+
+    formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
 }
 
-function closeStage(){
+// Inicializar aplicação
+const app = new VSPlayer();
 
-document.getElementById("stage").style.display="none";
-
-stopScroll();
-
-}
-
-function startScroll(){
-
-let stage = document.getElementById("stage");
-
-scrollInterval = setInterval(()=>{
-
-stage.scrollTop += 1;
-
-},50);
-
-}
-
-function stopScroll(){
-
-clearInterval(scrollInterval);
-
-}
-
+// Prevenir fechamento acidental durante playback
+window.addEventListener('beforeunload', (e) => {
+    if (app.isPlaying) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
 </script>
 
 </body>
