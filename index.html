@@ -1,18 +1,173 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-<title>General Tracks</title>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
+<title>General Tracks - Prototype</title>
+<style>
+body{
+  background:#0b0b0b;
+  color:white;
+  font-family:Arial;
+  margin:0;
+  padding:20px;
+}
+h1{
+  text-align:center;
+}
+.container{
+  max-width:900px;
+  margin:auto;
+}
+.track{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+button{
+  padding:10px 20px;
+  font-size:16px;
+  margin-right:10px;
+}
+input[type=range]{
+  width:200px;
+}
+.progress{
+  height:10px;
+  background:#333;
+  margin-top:20px;
+}
+.bar{
+  height:10px;
+  width:0%;
+  background:#4caf50;
+}
+</style>
 </head>
 
-<body style="background:black;color:white;font-family:Arial;text-align:center;margin-top:100px;">
+<body>
 
+<div class="container">
 <h1>General Tracks</h1>
-<p>Teste inicial do aplicativo</p>
 
-<button onclick="alert('O app está funcionando!')">
-Testar botão
-</button>
+<div>
+<button onclick="play()">PLAY</button>
+<button onclick="stop()">STOP</button>
+</div>
+
+<hr/>
+
+<div class="track">
+<label>Drums</label>
+<input type="file" id="drums" accept="audio/*">
+<input type="range" min="0" max="1" step="0.01" value="1" id="vol_drums">
+</div>
+
+<div class="track">
+<label>Bass</label>
+<input type="file" id="bass" accept="audio/*">
+<input type="range" min="0" max="1" step="0.01" value="1" id="vol_bass">
+</div>
+
+<div class="track">
+<label>Pads</label>
+<input type="file" id="pads" accept="audio/*">
+<input type="range" min="0" max="1" step="0.01" value="1" id="vol_pads">
+</div>
+
+<div class="track">
+<label>Click</label>
+<input type="file" id="click" accept="audio/*">
+<input type="range" min="0" max="1" step="0.01" value="1" id="vol_click">
+</div>
+
+<div class="progress">
+<div class="bar" id="progress"></div>
+</div>
+
+</div>
+
+<script>
+
+let audioContext
+let tracks={}
+let sources=[]
+let startTime=0
+
+async function loadTrack(file){
+ const arrayBuffer = await file.arrayBuffer()
+ return await audioContext.decodeAudioData(arrayBuffer)
+}
+
+async function play(){
+
+ audioContext = new (window.AudioContext || window.webkitAudioContext)()
+
+ const ids=["drums","bass","pads","click"]
+
+ for(let id of ids){
+
+   const input=document.getElementById(id)
+
+   if(input.files.length===0) continue
+
+   const buffer=await loadTrack(input.files[0])
+
+   const source=audioContext.createBufferSource()
+   const gain=audioContext.createGain()
+
+   gain.gain.value=document.getElementById("vol_"+id).value
+
+   source.buffer=buffer
+   source.connect(gain)
+   gain.connect(audioContext.destination)
+
+   sources.push(source)
+
+ }
+
+ startTime = audioContext.currentTime + 0.1
+
+ sources.forEach(s=>{
+   s.start(startTime)
+ })
+
+ updateProgress()
+}
+
+function stop(){
+ sources.forEach(s=>{
+   try{s.stop()}catch(e){}
+ })
+ sources=[]
+ document.getElementById("progress").style.width="0%"
+}
+
+function updateProgress(){
+
+ if(!audioContext) return
+
+ const progress=document.getElementById("progress")
+
+ function frame(){
+
+  if(!audioContext || sources.length===0) return
+
+  const time=audioContext.currentTime-startTime
+
+  const percent=Math.min(time/180,1)*100
+
+  progress.style.width=percent+"%"
+
+  requestAnimationFrame(frame)
+
+ }
+
+ frame()
+
+}
+
+</script>
 
 </body>
 </html>
