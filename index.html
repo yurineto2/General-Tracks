@@ -3,338 +3,1891 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VS Player Pro | Studio Edition</title>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com"></script>
+    <title>VS Player Pro - MultiTracks Style</title>
     <style>
-        @import url('https://fonts.googleapis.com');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
         }
 
         :root {
-            --bg-deep: #09090b;
-            --bg-surface: #121214;
-            --bg-elevated: #1c1c21;
-            --bg-hover: #27272a;
-            --accent: #0ea5e9;
-            --accent-glow: rgba(14, 165, 233, 0.3);
-            --border: #27272a;
-            --text-main: #f4f4f5;
-            --text-dim: #a1a1aa;
-            --text-muted: #52525b;
-            --success: #10b981;
+            --bg-primary: #0d0d0f;
+            --bg-secondary: #16161a;
+            --bg-tertiary: #1f1f24;
+            --bg-elevated: #2a2a30;
+            --bg-hover: #35353d;
+            --accent-cyan: #00d4ff;
+            --accent-pink: #ff2d78;
+            --accent-purple: #8b5cf6;
+            --accent-orange: #f97316;
+            --accent-green: #22c55e;
+            --accent-yellow: #eab308;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border-color: #27272a;
+            --danger: #ef4444;
+            --success: #22c55e;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-deep);
-            color: var(--text-main);
-            height: 100vh;
-            display: grid;
-            grid-template-rows: 64px 1fr 100px; /* Header, Main, Player */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             overflow: hidden;
+            height: 100vh;
+            user-select: none;
         }
 
-        /* --- HEADER --- */
+        .app-container {
+            display: grid;
+            grid-template-rows: 70px 1fr 220px 80px;
+            height: 100vh;
+            background: var(--bg-primary);
+        }
+
+        /* Header Moderno */
         .header {
-            background: var(--bg-surface);
-            border-bottom: 1px solid var(--border);
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 24px;
         }
 
-        .logo-group {
+        .logo-section {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
 
-        .logo-box {
-            width: 36px;
-            height: 36px;
-            background: var(--accent);
-            border-radius: 8px;
+        .logo {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
             color: white;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
         }
 
-        .logo-text h1 {
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .logo-text span {
-            font-size: 10px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .nav-controls {
-            display: flex;
-            background: var(--bg-deep);
-            padding: 4px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        .nav-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-dim);
-            padding: 6px 16px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: 0.2s;
-        }
-
-        .nav-btn.active {
-            background: var(--bg-elevated);
-            color: var(--accent);
-        }
-
-        /* --- MAIN LAYOUT --- */
-        .main-view {
-            display: grid;
-            grid-template-columns: 300px 1fr 280px;
-            overflow: hidden;
-        }
-
-        .sidebar {
-            background: var(--bg-surface);
-            border-right: 1px solid var(--border);
+        .logo-text {
             display: flex;
             flex-direction: column;
         }
 
-        .sidebar-header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
+        .logo-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
-        .section-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* --- MIXER & TRACKS --- */
-        .mixer-panel {
-            padding: 24px;
-            overflow-y: auto;
-            background: var(--bg-deep);
-        }
-
-        .track-strip {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            display: grid;
-            grid-template-columns: 1fr 120px 80px;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .track-info h3 {
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .track-info p {
+        .logo-subtitle {
             font-size: 11px;
             color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        /* Custom Slider */
-        input[type=range] {
-            -webkit-appearance: none;
-            background: var(--bg-elevated);
-            height: 4px;
-            border-radius: 2px;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 14px;
-            width: 14px;
-            border-radius: 50%;
-            background: var(--accent);
-            cursor: pointer;
-            box-shadow: 0 0 10px var(--accent-glow);
-        }
-
-        /* --- PLAYER BAR --- */
-        .player-bar {
-            background: var(--bg-surface);
-            border-top: 1px solid var(--border);
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            padding: 0 32px;
-        }
-
-        .playback-controls {
+        .header-center {
             display: flex;
             align-items: center;
             gap: 24px;
         }
 
-        .btn-play {
-            width: 52px;
-            height: 52px;
-            background: var(--accent);
-            border-radius: 50%;
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-tertiary);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .nav-tab {
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
             border: none;
-            color: white;
+            background: transparent;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-tab.active {
+            background: var(--bg-elevated);
+            color: var(--accent-cyan);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--accent-cyan);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
             cursor: pointer;
-            box-shadow: 0 4px 15px var(--accent-glow);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            overflow: hidden;
+        }
+
+        /* Setlist Sidebar */
+        .sidebar-setlist {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .setlist-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .setlist-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+
+        .setlist-count {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--bg-tertiary);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .setlist-actions {
+            padding: 12px 20px;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .setlist {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .song-item {
+            background: var(--bg-tertiary);
+            border: 1px solid transparent;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .song-item:hover {
+            background: var(--bg-elevated);
+            transform: translateX(4px);
+        }
+
+        .song-item.active {
+            background: linear-gradient(90deg, rgba(0, 212, 255, 0.1), transparent);
+            border-color: var(--accent-cyan);
+            border-left: 3px solid var(--accent-cyan);
+        }
+
+        .song-item.playing::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--accent-green);
+            animation: pulse-bar 1.5s infinite;
+        }
+
+        @keyframes pulse-bar {
+            0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--accent-green); }
+            50% { opacity: 0.6; }
+        }
+
+        .song-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .song-number {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            background: var(--bg-secondary);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .song-key {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-orange);
+            background: rgba(249, 115, 22, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .song-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .song-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .song-bpm {
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        /* Player Area */
+        .player-area {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+
+        /* Timeline Section */
+        .timeline-section {
+            height: 200px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            height: 60px;
+        }
+
+        .timeline-info {
+            display: flex;
+            gap: 24px;
+            align-items: center;
         }
 
         .time-display {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 24px;
-            color: var(--accent);
+            font-family: 'SF Mono', monospace;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
         }
 
-        .status-badge {
-            font-size: 10px;
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-            padding: 2px 8px;
-            border-radius: 4px;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+        .timeline-song-info {
+            display: flex;
+            flex-direction: column;
         }
 
-        .icon-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-dim);
+        .timeline-song-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .timeline-song-artist {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .timeline-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .transport-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
             cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s;
         }
 
-        .icon-btn:hover {
+        .transport-btn:hover {
             background: var(--bg-hover);
-            color: var(--text-main);
+            transform: scale(1.05);
+        }
+
+        .transport-btn.play {
+            background: var(--accent-green);
+            color: white;
+            border-color: var(--accent-green);
+            width: 56px;
+            height: 56px;
+            font-size: 24px;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+        }
+
+        .transport-btn.stop {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        /* Waveform Display */
+        .waveform-container {
+            position: relative;
+            height: 120px;
+            margin: 0 24px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .waveform-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .playhead {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--accent-pink);
+            left: 0%;
+            box-shadow: 0 0 10px var(--accent-pink);
+            z-index: 10;
+        }
+
+        .playhead::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -5px;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-pink);
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(255, 45, 120, 0.5);
+        }
+
+        .section-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 24px;
+            display: flex;
+            padding: 0 24px;
+        }
+
+        .section-marker {
+            position: absolute;
+            top: 0;
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            transform: translateX(-50%);
+        }
+
+        .section-marker::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            width: 2px;
+            height: 104px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Stems Pads Grid - Estilo MultiTracks */
+        .stems-section {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .stems-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stems-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+
+        .stems-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .stems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
+        }
+
+        .stem-pad {
+            aspect-ratio: 1;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stem-pad:hover {
+            border-color: var(--bg-hover);
+            transform: translateY(-2px);
+        }
+
+        .stem-pad.active {
+            border-color: var(--accent-cyan);
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.1), var(--bg-secondary));
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.15);
+        }
+
+        .stem-pad.muted {
+            opacity: 0.4;
+            border-color: var(--border-color);
+        }
+
+        .stem-pad.solo {
+            border-color: var(--accent-yellow);
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.2);
+        }
+
+        .stem-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+        }
+
+        .stem-pad.active .stem-icon {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--accent-cyan);
+        }
+
+        .stem-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stem-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .stem-status {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .stem-pad.active .stem-status {
+            color: var(--accent-cyan);
+        }
+
+        .stem-volume-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-cyan);
+            transform: scaleX(0.8);
+            transform-origin: left;
+            transition: transform 0.1s;
+        }
+
+        /* Mixer Section - Faders Verticais */
+        .mixer-section {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mixer-header {
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .mixer-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+        }
+
+        .mixer-channels {
+            display: flex;
+            gap: 2px;
+            padding: 20px 24px;
+            overflow-x: auto;
+            flex: 1;
+        }
+
+        .mixer-channel {
+            width: 70px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .mixer-channel:hover {
+            background: var(--bg-elevated);
+        }
+
+        .mixer-channel.active {
+            border-color: var(--accent-cyan);
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.05), var(--bg-tertiary));
+        }
+
+        .channel-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        .channel-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .fader-container {
+            flex: 1;
+            width: 40px;
+            position: relative;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 8px 0;
+        }
+
+        .fader-track {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: calc(100% - 16px);
+            background: linear-gradient(180deg, var(--accent-cyan), var(--accent-pink));
+            border-radius: 2px;
+            opacity: 0.3;
+        }
+
+        .fader-thumb {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 16px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            cursor: ns-resize;
+            transition: transform 0.1s;
+        }
+
+        .fader-thumb:hover {
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .channel-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .channel-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .channel-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .channel-btn.mute.active {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .channel-btn.solo.active {
+            background: var(--accent-yellow);
+            color: var(--bg-primary);
+            border-color: var(--accent-yellow);
+        }
+
+        .pan-knob {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .pan-knob::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 1px;
+        }
+
+        /* Bottom Transport Bar */
+        .transport-bar {
+            background: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 24px;
+        }
+
+        .transport-main {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .transport-btn-large {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.2s;
+        }
+
+        .transport-btn-large:hover {
+            transform: scale(1.05);
+        }
+
+        .transport-btn-large.play {
+            background: var(--accent-green);
+            color: white;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .transport-btn-large.stop {
+            background: var(--danger);
+            color: white;
+        }
+
+        .transport-btn-large.secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .progress-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .progress-bar-container {
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+            width: 0%;
+            transition: width 0.1s linear;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .progress-time {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .next-song-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-left: 24px;
+            border-left: 1px solid var(--border-color);
+            min-width: 280px;
+        }
+
+        .next-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .next-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .next-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+
+        .next-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .btn-next {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .btn-next:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+            border-color: var(--accent-cyan);
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 28px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        .file-drop {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 48px;
+            text-align: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-tertiary);
+        }
+
+        .file-drop:hover {
+            border-color: var(--accent-cyan);
+            background: var(--bg-elevated);
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-elevated);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--bg-hover);
+        }
+
+        /* MIDI Indicator */
+        .midi-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--bg-tertiary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .midi-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .midi-dot.active {
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 240px 1fr;
+            }
+            .stems-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
         }
     </style>
 </head>
 <body>
 
+<div class="app-container">
+    <!-- Header -->
     <header class="header">
-        <div class="logo-group">
-            <div class="logo-box">
-                <i data-lucide="layers" size="20"></i>
-            </div>
+        <div class="logo-section">
+            <div class="logo">VS</div>
             <div class="logo-text">
-                <h1>VS PLAYER PRO</h1>
-                <span>Professional Multitrack</span>
+                <div class="logo-title">VS Player Pro</div>
+                <div class="logo-subtitle">Multitrack Playback</div>
             </div>
         </div>
 
-        <nav class="nav-controls">
-            <button class="nav-btn active">Mixer</button>
-            <button class="nav-btn">Setlist</button>
-            <button class="nav-btn">Mapeamento</button>
-            <button class="nav-btn">Configurações</button>
-        </nav>
+        <div class="header-center">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="app.switchTab('player')">Player</button>
+                <button class="nav-tab" onclick="app.switchTab('setlist')">Setlist</button>
+                <button class="nav-tab" onclick="app.switchTab('settings')">Settings</button>
+            </div>
+            
+            <div class="midi-status">
+                <div class="midi-dot" id="midiDot"></div>
+                <span>MIDI</span>
+            </div>
+        </div>
 
         <div class="header-actions">
-            <button class="icon-btn"><i data-lucide="search" size="20"></i></button>
-            <button class="icon-btn"><i data-lucide="bell" size="20"></i></button>
-            <button class="icon-btn"><i data-lucide="user" size="20"></i></button>
+            <button class="btn-icon" onclick="app.toggleFullscreen()" title="Fullscreen">⛶</button>
+            <button class="btn-icon" onclick="app.openSettings()" title="Settings">⚙</button>
+            <button class="btn-primary" onclick="app.openAddSong()">
+                <span>+</span> Add Song
+            </button>
         </div>
     </header>
 
-    <main class="main-view">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <span class="section-title">Playlist Atual</span>
-                <button class="icon-btn"><i data-lucide="plus-circle" size="18"></i></button>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Setlist Sidebar -->
+        <aside class="sidebar-setlist">
+            <div class="setlist-header">
+                <div class="setlist-title">Setlist</div>
+                <div class="setlist-count" id="songCount">0 songs</div>
             </div>
-            <!-- Lista de músicas viria aqui -->
-        </aside>
-
-        <section class="mixer-panel">
-            <div class="track-strip">
-                <div class="track-info">
-                    <h3>GUITARRAS ELÉTRICAS</h3>
-                    <p>Stereo • Ch 1-2</p>
-                </div>
-                <input type="range" value="80">
-                <div style="display: flex; gap: 8px;">
-                    <button class="icon-btn"><i data-lucide="mic-off" size="16"></i></button>
-                    <button class="icon-btn"><i data-lucide="headphones" size="16"></i></button>
-                </div>
+            
+            <div class="setlist-actions">
+                <button class="btn-small" onclick="app.clearSetlist()">Clear</button>
+                <button class="btn-small" onclick="app.saveSetlist()">Save</button>
+                <button class="btn-small" onclick="app.loadSetlist()">Load</button>
             </div>
 
-            <div class="track-strip">
-                <div class="track-info">
-                    <h3>BACKING VOCALS</h3>
-                    <p>Mono • Ch 3</p>
-                </div>
-                <input type="range" value="65">
-                <div style="display: flex; gap: 8px;">
-                    <button class="icon-btn"><i data-lucide="mic-off" size="16"></i></button>
-                    <button class="icon-btn"><i data-lucide="headphones" size="16"></i></button>
-                </div>
-            </div>
-        </section>
-
-        <aside class="sidebar" style="border-left: 1px solid var(--border); border-right: none;">
-            <div class="sidebar-header">
-                <span class="section-title">Detalhes da Track</span>
+            <div class="setlist" id="setlist">
+                <!-- Songs inserted here -->
             </div>
         </aside>
-    </main>
 
-    <footer class="player-bar">
-        <div class="song-playing">
-            <p style="font-size: 14px; font-weight: 600;">Ousado Amor</p>
-            <p style="font-size: 12px; color: var(--text-muted);">Tom: G | BPM: 72</p>
+        <!-- Player Area -->
+        <div class="player-area">
+            <!-- Timeline Section -->
+            <div class="timeline-section">
+                <div class="timeline-header">
+                    <div class="timeline-info">
+                        <div class="time-display" id="timeDisplay">00:00</div>
+                        <div class="timeline-song-info">
+                            <div class="timeline-song-title" id="timelineTitle">Select a song</div>
+                            <div class="timeline-song-artist" id="timelineArtist">--</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-controls">
+                        <button class="transport-btn" onclick="app.prevSong()">⏮</button>
+                        <button class="transport-btn stop" onclick="app.stop()">⏹</button>
+                        <button class="transport-btn play" onclick="app.togglePlay()" id="playBtn">▶</button>
+                        <button class="transport-btn" onclick="app.nextSong()">⏭</button>
+                    </div>
+                </div>
+
+                <div class="section-markers" id="sectionMarkers">
+                    <div class="section-marker" style="left: 10%">Intro</div>
+                    <div class="section-marker" style="left: 30%">Verse</div>
+                    <div class="section-marker" style="left: 50%">Chorus</div>
+                    <div class="section-marker" style="left: 70%">Bridge</div>
+                    <div class="section-marker" style="left: 90%">Outro</div>
+                </div>
+
+                <div class="waveform-container" onclick="app.seek(event)">
+                    <canvas class="waveform-canvas" id="waveformCanvas"></canvas>
+                    <div class="playhead" id="playhead"></div>
+                </div>
+            </div>
+
+            <!-- Stems Pads Grid -->
+            <div class="stems-section">
+                <div class="stems-header">
+                    <div class="stems-title">Stems / Tracks</div>
+                    <div class="stems-actions">
+                        <button class="btn-small" onclick="app.unmuteAll()">Unmute All</button>
+                        <button class="btn-small" onclick="app.clearSolos()">Clear Solos</button>
+                    </div>
+                </div>
+                
+                <div class="stems-grid" id="stemsGrid">
+                    <!-- Stem pads inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mixer Section -->
+    <div class="mixer-section">
+        <div class="mixer-header">
+            <div class="mixer-title">Mixer</div>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <span style="font-size: 12px; color: var(--text-muted);">Master</span>
+                <input type="range" min="0" max="100" value="85" style="width: 100px;">
+            </div>
+        </div>
+        
+        <div class="mixer-channels" id="mixerChannels">
+            <!-- Mixer channels inserted here -->
+        </div>
+    </div>
+
+    <!-- Bottom Transport Bar -->
+    <div class="transport-bar">
+        <div class="transport-main">
+            <button class="transport-btn-large secondary" onclick="app.prevSong()">⏮</button>
+            <button class="transport-btn-large stop" onclick="app.stop()">⏹</button>
+            <button class="transport-btn-large play" onclick="app.togglePlay()" id="transportPlayBtn">▶</button>
+            <button class="transport-btn-large secondary" onclick="app.nextSong()">⏭</button>
         </div>
 
-        <div class="playback-controls">
-            <button class="icon-btn"><i data-lucide="skip-back" fill="currentColor"></i></button>
-            <button class="btn-play"><i data-lucide="play" fill="white"></i></button>
-            <button class="icon-btn"><i data-lucide="skip-forward" fill="currentColor"></i></button>
-            <div class="time-display">02:45</div>
+        <div class="progress-section">
+            <div class="progress-bar-container" onclick="app.seek(event)">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <div class="progress-time">
+                <span id="currentTime">00:00</span>
+                <span id="totalTime">00:00</span>
+            </div>
         </div>
 
-        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 16px;">
-            <span class="status-badge">OUT: 1-8</span>
-            <button class="icon-btn"><i data-lucide="volume-2" size="20"></i></button>
-            <button class="icon-btn"><i data-lucide="maximize" size="20"></i></button>
+        <div class="next-song-section">
+            <div class="next-info">
+                <div class="next-label">Next Song</div>
+                <div class="next-title" id="nextTitle">--</div>
+                <div class="next-meta" id="nextMeta">--</div>
+            </div>
+            <button class="btn-next" onclick="app.nextSong()">⏭</button>
         </div>
-    </footer>
+    </div>
+</div>
 
-    <script>
-        // Inicializa os ícones do Lucide
-        lucide.createIcons();
-    </script>
+<!-- Add Song Modal -->
+<div class="modal" id="addSongModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            Add New Song
+            <button class="close-btn" onclick="app.closeModals()">×</button>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Song Title</label>
+            <input type="text" class="form-input" id="songName" placeholder="Enter song name">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+                <label class="form-label">BPM</label>
+                <input type="number" class="form-input" id="songBpm" value="120" min="40" max="300">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Key</label>
+                <input type="text" class="form-input" id="songKey" placeholder="e.g. G, Dm">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Duration (seconds)</label>
+            <input type="number" class="form-input" id="songDuration" value="240">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Audio Files (Stems)</label>
+            <div class="file-drop" onclick="document.getElementById('audioFiles').click()">
+                <div style="font-size: 48px; margin-bottom: 16px;">📁</div>
+                <div style="font-weight: 600; margin-bottom: 8px;">Drop stems here or click to browse</div>
+                <div style="font-size: 13px; color: var(--text-muted);">
+                    drums.wav • bass.wav • keys.wav • guitars.wav • vocals.wav • click.wav
+                </div>
+            </div>
+            <input type="file" id="audioFiles" multiple accept=".wav,.aiff,.mp3" style="display: none;" onchange="app.handleFiles(this.files)">
+        </div>
+
+        <button class="btn-save" onclick="app.addSong()">Add to Setlist</button>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal" id="settingsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            Settings
+            <button class="close-btn" onclick="app.closeModals()">×</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label class="form-label">Main Output</label>
+                <select class="form-input" id="mainOutput">
+                    <option value="default">System Default</option>
+                    <option value="interface1">Audio Interface (1-2)</option>
+                    <option value="interface2">Audio Interface (3-4)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Click Output</label>
+                <select class="form-input" id="clickOutput">
+                    <option value="default">Same as Main</option>
+                    <option value="output3">Output 3</option>
+                    <option value="output4">Output 4</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">MIDI Input Device</label>
+            <select class="form-input" id="midiInput">
+                <option value="">None</option>
+                <option value="pedal1">USB MIDI Pedal</option>
+                <option value="keyboard1">MIDI Keyboard</option>
+            </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label class="form-label">Buffer Size</label>
+                <select class="form-input" id="bufferSize">
+                    <option value="128">128 samples (Low Latency)</option>
+                    <option value="256" selected>256 samples</option>
+                    <option value="512">512 samples</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Sample Rate</label>
+                <select class="form-input" id="sampleRate">
+                    <option value="44100">44.1 kHz</option>
+                    <option value="48000" selected>48 kHz</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                <input type="checkbox" id="autoAdvance" checked style="width: 20px; height: 20px; accent-color: var(--accent-cyan);">
+                <span>Auto-advance to next song</span>
+            </label>
+        </div>
+
+        <button class="btn-save" onclick="app.saveSettings()">Save Settings</button>
+    </div>
+</div>
+
+<script>
+/**
+ * VS Player Pro - MultiTracks Style
+ * Interface profissional para playback de stems
+ */
+
+class VSPlayer {
+    constructor() {
+        this.audioContext = null;
+        this.isPlaying = false;
+        this.currentSongIndex = -1;
+        this.currentTime = 0;
+        this.duration = 0;
+        this.bpm = 120;
+        this.settings = {
+            autoAdvance: true
+        };
+        
+        this.songs = [];
+        this.stems = [];
+        
+        // Stem types com ícones e cores
+        this.stemTypes = {
+            click: { icon: '🎵', color: '#ef4444', name: 'Click' },
+            guide: { icon: '🎤', color: '#f97316', name: 'Guide' },
+            drums: { icon: '🥁', color: '#eab308', name: 'Drums' },
+            bass: { icon: '🎸', color: '#22c55e', name: 'Bass' },
+            keys: { icon: '🎹', color: '#06b6d4', name: 'Keys' },
+            synth: { icon: '🎛️', color: '#8b5cf6', name: 'Synth' },
+            guitars: { icon: '🎸', color: '#ec4899', name: 'Guitars' },
+            vocals: { icon: '🎙️', color: '#f43f5e', name: 'Vocals' },
+            pads: { icon: '🌊', color: '#3b82f6', name: 'Pads' },
+            orchestra: { icon: '🎻', color: '#a855f7', name: 'Orchestra' }
+        };
+
+        this.init();
+    }
+
+    async init() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.error('Web Audio API not supported');
+        }
+
+        await this.initMIDI();
+        this.loadDemoData();
+        this.setupKeyboardShortcuts();
+        this.startUpdateLoop();
+        
+        // Desenhar waveform inicial
+        this.drawWaveform();
+    }
+
+    async initMIDI() {
+        if (navigator.requestMIDIAccess) {
+            try {
+                const midi = await navigator.requestMIDIAccess();
+                midi.inputs.forEach(input => {
+                    input.onmidimessage = (e) => this.handleMIDI(e);
+                });
+                document.getElementById('midiDot').classList.add('active');
+            } catch (e) {
+                console.warn('MIDI not available');
+            }
+        }
+    }
+
+    handleMIDI(event) {
+        const [cmd, note, vel] = event.data;
+        if (cmd === 144 || cmd === 176) {
+            if (note === 64 || note === 0) this.togglePlay();
+            else if (note === 1) this.stop();
+            else if (note === 2) this.prevSong();
+            else if (note === 3) this.nextSong();
+        }
+    }
+
+    loadDemoData() {
+        this.songs = [
+            {
+                id: 1,
+                title: "Oceans (Where Feet May Fail)",
+                artist: "Hillsong United",
+                bpm: 65,
+                key: "D",
+                duration: 540,
+                stems: [
+                    { type: 'click', volume: 0.8, muted: false, solo: false },
+                    { type: 'drums', volume: 0.9, muted: false, solo: false },
+                    { type: 'bass', volume: 0.85, muted: false, solo: false },
+                    { type: 'pads', volume: 0.7, muted: false, solo: false },
+                    { type: 'keys', volume: 0.75, muted: false, solo: false },
+                    { type: 'guitars', volume: 0.8, muted: true, solo: false },
+                    { type: 'vocals', volume: 0.6, muted: true, solo: false }
+                ]
+            },
+            {
+                id: 2,
+                title: "What A Beautiful Name",
+                artist: "Hillsong Worship",
+                bpm: 68,
+                key: "D",
+                duration: 420,
+                stems: [
+                    { type: 'click', volume: 0.8, muted: false, solo: false },
+                    { type: 'drums', volume: 0.9, muted: false, solo: false },
+                    { type: 'bass', volume: 0.85, muted: false, solo: false },
+                    { type: 'orchestra', volume: 0.75, muted: false, solo: false },
+                    { type: 'pads', volume: 0.7, muted: false, solo: false }
+                ]
+            },
+            {
+                id: 3,
+                title: "Graves Into Gardens",
+                artist: "Elevation Worship",
+                bpm: 72,
+                key: "B",
+                duration: 380,
+                stems: [
+                    { type: 'click', volume: 0.8, muted: false, solo: false },
+                    { type: 'drums', volume: 0.9, muted: false, solo: false },
+                    { type: 'bass', volume: 0.85, muted: false, solo: false },
+                    { type: 'synth', volume: 0.8, muted: false, solo: false },
+                    { type: 'guitars', volume: 0.75, muted: false, solo: false }
+                ]
+            }
+        ];
+
+        if (this.songs.length > 0) this.loadSong(0);
+    }
+
+    loadSong(index) {
+        if (index < 0 || index >= this.songs.length) return;
+        
+        this.currentSongIndex = index;
+        const song = this.songs[index];
+        this.stems = song.stems;
+        this.duration = song.duration;
+        this.currentTime = 0;
+        this.bpm = song.bpm;
+
+        // Update UI
+        document.getElementById('timelineTitle').textContent = song.title;
+        document.getElementById('timelineArtist').textContent = `${song.artist} • ${song.key} • ${song.bpm} BPM`;
+        document.getElementById('totalTime').textContent = this.formatTime(song.duration);
+        document.getElementById('songCount').textContent = `${this.songs.length} songs`;
+
+        // Next song
+        const next = this.songs[index + 1];
+        document.getElementById('nextTitle').textContent = next ? next.title : '--';
+        document.getElementById('nextMeta').textContent = next ? `${next.key} • ${next.bpm} BPM` : '';
+
+        this.renderSetlist();
+        this.renderStems();
+        this.renderMixer();
+        this.updateProgress();
+    }
+
+    renderSetlist() {
+        const container = document.getElementById('setlist');
+        container.innerHTML = '';
+
+        this.songs.forEach((song, i) => {
+            const el = document.createElement('div');
+            el.className = `song-item ${i === this.currentSongIndex ? 'active' : ''} ${i === this.currentSongIndex && this.isPlaying ? 'playing' : ''}`;
+            el.onclick = () => this.loadSong(i);
+            
+            el.innerHTML = `
+                <div class="song-header">
+                    <span class="song-number">${String(i + 1).padStart(2, '0')}</span>
+                    <span class="song-key">${song.key}</span>
+                </div>
+                <div class="song-title">${song.title}</div>
+                <div class="song-meta">
+                    <span class="song-bpm">${song.bpm} BPM</span>
+                    <span>${this.formatTime(song.duration)}</span>
+                </div>
+            `;
+            container.appendChild(el);
+        });
+    }
+
+    renderStems() {
+        const container = document.getElementById('stemsGrid');
+        container.innerHTML = '';
+
+        this.stems.forEach((stem, i) => {
+            const type = this.stemTypes[stem.type] || { icon: '🎵', color: '#666', name: stem.type };
+            const el = document.createElement('div');
+            
+            el.className = `stem-pad ${!stem.muted ? 'active' : ''} ${stem.muted ? 'muted' : ''} ${stem.solo ? 'solo' : ''}`;
+            el.onclick = () => this.toggleStem(i);
+            el.oncontextmenu = (e) => { e.preventDefault(); this.toggleSolo(i); };
+            
+            el.innerHTML = `
+                <div class="stem-icon" style="background: ${type.color}20; border-color: ${type.color}40;">${type.icon}</div>
+                <div class="stem-info">
+                    <div class="stem-name">${type.name}</div>
+                    <div class="stem-status">${stem.muted ? 'Muted' : stem.solo ? 'Solo' : 'Active'}</div>
+                </div>
+                <div class="stem-volume-bar" style="transform: scaleX(${stem.volume}); background: ${type.color}"></div>
+            `;
+            
+            container.appendChild(el);
+        });
+    }
+
+    renderMixer() {
+        const container = document.getElementById('mixerChannels');
+        container.innerHTML = '';
+
+        this.stems.forEach((stem, i) => {
+            const type = this.stemTypes[stem.type] || { icon: '🎵', name: stem.type };
+            const ch = document.createElement('div');
+            
+            ch.className = `mixer-channel ${!stem.muted ? 'active' : ''}`;
+            ch.innerHTML = `
+                <div class="channel-label">${type.name}</div>
+                <div class="channel-icon">${type.icon}</div>
+                <div class="pan-knob"></div>
+                <div class="fader-container">
+                    <div class="fader-track"></div>
+                    <div class="fader-thumb" style="bottom: ${stem.volume * 100}%"></div>
+                </div>
+                <div class="channel-buttons">
+                    <button class="channel-btn mute ${stem.muted ? 'active' : ''}" onclick="event.stopPropagation(); app.toggleMute(${i})">M</button>
+                    <button class="channel-btn solo ${stem.solo ? 'active' : ''}" onclick="event.stopPropagation(); app.toggleSolo(${i})">S</button>
+                </div>
+            `;
+            
+            // Fader interaction
+            const fader = ch.querySelector('.fader-container');
+            const thumb = ch.querySelector('.fader-thumb');
+            let dragging = false;
+            
+            fader.addEventListener('mousedown', (e) => {
+                dragging = true;
+                updateVolume(e);
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (dragging) updateVolume(e);
+            });
+            
+            document.addEventListener('mouseup', () => dragging = false);
+            
+            const updateVolume = (e) => {
+                const rect = fader.getBoundingClientRect();
+                const y = rect.bottom - e.clientY;
+                const pct = Math.max(0, Math.min(100, (y / rect.height) * 100));
+                stem.volume = pct / 100;
+                thumb.style.bottom = pct + '%';
+                this.renderStems();
+            };
+            
+            container.appendChild(ch);
+        });
+    }
+
+    drawWaveform() {
+        const canvas = document.getElementById('waveformCanvas');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width = canvas.offsetWidth;
+        const h = canvas.height = canvas.offsetHeight;
+        
+        ctx.fillStyle = '#0d0d0f';
+        ctx.fillRect(0, 0, w, h);
+        
+        // Draw waveform
+        ctx.strokeStyle = '#00d4ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        
+        for (let x = 0; x < w; x += 3) {
+            const amp = Math.random() * h * 0.6 + h * 0.2;
+            const y = (h - amp) / 2;
+            ctx.moveTo(x, y);
+            ctx.lineTo(x, y + amp);
+        }
+        ctx.stroke();
+        
+        // Progress overlay
+        const progress = this.currentTime / this.duration;
+        ctx.fillStyle = 'rgba(0, 212, 255, 0.1)';
+        ctx.fillRect(0, 0, w * progress, h);
+    }
+
+    togglePlay() {
+        this.isPlaying = !this.isPlaying;
+        const icon = this.isPlaying ? '⏸' : '▶';
+        document.getElementById('playBtn').innerHTML = icon;
+        document.getElementById('transportPlayBtn').innerHTML = icon;
+        this.renderSetlist();
+    }
+
+    stop() {
+        this.isPlaying = false;
+        this.currentTime = 0;
+        document.getElementById('playBtn').innerHTML = '▶';
+        document.getElementById('transportPlayBtn').innerHTML = '▶';
+        this.updateProgress();
+        this.renderSetlist();
+    }
+
+    nextSong() {
+        if (this.currentSongIndex < this.songs.length - 1) {
+            this.stop();
+            this.loadSong(this.currentSongIndex + 1);
+            if (this.settings.autoAdvance) setTimeout(() => this.togglePlay(), 300);
+        }
+    }
+
+    prevSong() {
+        if (this.currentSongIndex > 0) {
+            this.stop();
+            this.loadSong(this.currentSongIndex - 1);
+        }
+    }
+
+    seek(e) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const pct = x / rect.width;
+        this.currentTime = this.duration * pct;
+        this.updateProgress();
+    }
+
+    updateProgress() {
+        const pct = (this.currentTime / this.duration) * 100;
+        document.getElementById('progressBar').style.width = pct + '%';
+        document.getElementById('playhead').style.left = pct + '%';
+        document.getElementById('timeDisplay').textContent = this.formatTime(this.currentTime);
+        document.getElementById('currentTime').textContent = this.formatTime(this.currentTime);
+        this.drawWaveform();
+    }
+
+    toggleStem(index) {
+        this.stems[index].muted = !this.stems[index].muted;
+        this.renderStems();
+        this.renderMixer();
+    }
+
+    toggleMute(index) {
+        this.stems[index].muted = !this.stems[index].muted;
+        this.renderStems();
+        this.renderMixer();
+    }
+
+    toggleSolo(index) {
+        this.stems[index].solo = !this.stems[index].solo;
+        this.renderStems();
+        this.renderMixer();
+    }
+
+    unmuteAll() {
+        this.stems.forEach(s => s.muted = false);
+        this.renderStems();
+        this.renderMixer();
+    }
+
+    clearSolos() {
+        this.stems.forEach(s => s.solo = false);
+        this.renderStems();
+        this.renderMixer();
+    }
+
+    switchTab(tab) {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    openAddSong() {
+        document.getElementById('addSongModal').classList.add('active');
+    }
+
+    openSettings() {
+        document.getElementById('settingsModal').classList.add('active');
+    }
+
+    closeModals() {
+        document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+    }
+
+    addSong() {
+        const name = document.getElementById('songName').value;
+        const bpm = parseInt(document.getElementById('songBpm').value);
+        const key = document.getElementById('songKey').value;
+        const duration = parseInt(document.getElementById('songDuration').value);
+
+        if (!name) return alert('Please enter a song name');
+
+        this.songs.push({
+            id: Date.now(),
+            title: name,
+            artist: "Unknown Artist",
+            bpm: bpm,
+            key: key || "C",
+            duration: duration,
+            stems: [
+                { type: 'click', volume: 0.8, muted: false, solo: false },
+                { type: 'drums', volume: 0.9, muted: false, solo: false },
+                { type: 'bass', volume: 0.85, muted: false, solo: false },
+                { type: 'keys', volume: 0.75, muted: false, solo: false }
+            ]
+        });
+
+        this.renderSetlist();
+        this.closeModals();
+        document.getElementById('songName').value = '';
+    }
+
+    saveSettings() {
+        this.settings.autoAdvance = document.getElementById('autoAdvance').checked;
+        this.closeModals();
+    }
+
+    clearSetlist() {
+        if (confirm('Clear entire setlist?')) {
+            this.songs = [];
+            this.currentSongIndex = -1;
+            this.renderSetlist();
+        }
+    }
+
+    saveSetlist() {
+        const data = JSON.stringify(this.songs, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'setlist.json';
+        a.click();
+    }
+
+    loadSetlist() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    this.songs = JSON.parse(ev.target.result);
+                    this.renderSetlist();
+                    if (this.songs.length > 0) this.loadSong(0);
+                } catch (err) {
+                    alert('Error loading setlist');
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+            
+            switch(e.code) {
+                case 'Space':
+                    e.preventDefault();
+                    this.togglePlay();
+                    break;
+                case 'ArrowRight':
+                    this.nextSong();
+                    break;
+                case 'ArrowLeft':
+                    this.prevSong();
+                    break;
+                case 'Escape':
+                    this.closeModals();
+                    break;
+            }
+        });
+    }
+
+    startUpdateLoop() {
+        setInterval(() => {
+            if (this.isPlaying) {
+                this.currentTime += 0.1;
+                if (this.currentTime >= this.duration) {
+                    if (this.settings.autoAdvance) this.nextSong();
+                    else this.stop();
+                }
+                this.updateProgress();
+            }
+        }, 100);
+    }
+
+    formatTime(sec) {
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+}
+
+const app = new VSPlayer();
+
+window.addEventListener('beforeunload', (e) => {
+    if (app.isPlaying) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+</script>
+
 </body>
 </html>
